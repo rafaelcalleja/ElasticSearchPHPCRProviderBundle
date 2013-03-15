@@ -1,0 +1,26 @@
+{
+    "name": "rc/elasticasearch-phpcr-provider-bundle",
+    "type": "symfony-bundle",
+    "description": "PHPCR Provider class for elasticasearch",
+    "keywords": ["phpcr", "provider", "elasticasearch", "foqelasticasearch", "bundle"],
+    "homepage": "https://github.com/rafaelcalleja/ElasticSearchPHPCRProviderBundle.git", 
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Rafael Calleja",
+            "email": "rafa.calleja@d-noise.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2",
+	"exercise/elastica-bundle": "dev-master"
+    },
+    "require-dev": {
+        "symfony/framework-bundle": ">=2.1,<2.2-dev"
+    },
+    "autoload": {
+        "psr-0": { "RC\\ElasticSearchPHPCRProviderBundle": "" }
+    },
+    "minimum-stability": "dev",
+    "target-dir": "RC/ElasticSearchPHPCRProviderBundle"
+}
