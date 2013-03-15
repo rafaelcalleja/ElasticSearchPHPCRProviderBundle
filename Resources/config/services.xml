@@ -4,17 +4,38 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <!--
     <parameters>
-        <parameter key="rc_elastic_search_phpcr_provider.example.class">RC\ElasticSearchPHPCRProviderBundle\Example</parameter>
+        <parameter key="rc_elastic_search_phpcr.provider.prototype.orm.class">RC\ElasticSearchPHPCRProviderBundle\Doctrine\PHPCR\Provider</parameter>
+        <parameter key="rc_elastic_search_phpcr.listener.prototype.orm.class">RC\ElasticSearchPHPCRProviderBundle\Doctrine\PHPCR\Listener</parameter>
+        <parameter key="rc_elastic_search_phpcr.elastica_to_model_transformer.prototype.orm.class">RC\ElasticSearchPHPCRProviderBundle\Doctrine\PHPCR\ElasticaToModelTransformer</parameter>
+        <parameter key="rc_elastic_search_phpcr.manager.orm.class">RC\ElasticSearchPHPCRProviderBundle\Doctrine\PHPCR\RepositoryManager</parameter>
     </parameters>
 
     <services>
-        <service id="rc_elastic_search_phpcr_provider.example" class="%rc_elastic_search_phpcr_provider.example.class%">
-            <argument type="service" id="service_id" />
-            <argument>plain_value</argument>
-            <argument>%parameter_name%</argument>
+       <service id="rc_elastic_search_phpcr.provider.prototype.orm" class="%rc_elastic_search_phpcr.provider.prototype.orm.class%" public="true" abstract="true">
+            <argument /> <!-- object persister -->
+            <argument /> <!-- model -->
+            <argument type="collection" /> <!-- options -->
+            <argument type="service" id="doctrine_phpcr" />
+        </service>
+
+        <service id="rc_elastic_search_phpcr.listener.prototype.orm" class="%rc_elastic_search_phpcr.listener.prototype.orm.class%" public="false" abstract="true">
+            <argument /> <!-- object persister -->
+            <argument /> <!-- model -->
+            <argument type="collection" /> <!-- events -->
+            <argument/> <!-- identifier -->
+            <argument /> <!-- check method -->
+        </service>
+
+        <service id="rc_elastic_search_phpcr.elastica_to_model_transformer.prototype.orm" class="%rc_elastic_search_phpcr.elastica_to_model_transformer.prototype.orm.class%" public="false">
+            <argument type="service" id="doctrine_phpcr" />
+            <argument /> <!-- model -->
+            <argument type="collection" /> <!-- options -->
+        </service>
+
+        <service id="rc_elastic_search_phpcr.manager.orm" class="%rc_elastic_search_phpcr.manager.orm.class%">
+            <argument type="service" id="doctrine_phpcr"/>
+            <argument type="service" id="annotation_reader"/>
         </service>
     </services>
-    -->
 </container>
