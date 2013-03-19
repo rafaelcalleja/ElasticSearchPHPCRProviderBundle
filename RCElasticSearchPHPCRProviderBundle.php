@@ -17,4 +17,10 @@ class RCElasticSearchPHPCRProviderBundle extends Bundle
 		$container->addCompilerPass(new RegisterProvidersPass(), PassConfig::TYPE_BEFORE_REMOVING);
 		$container->addCompilerPass(new TransformerPass());
 	}
+	
+	public function getAlias()
+	{
+		die('managed');
+		return array('AcmeFooBundle', 'AcmeBarBundle');
+	}
 }

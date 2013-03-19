@@ -12,7 +12,7 @@ class DefaultController extends Controller
     	$userType = $this->container->get('foq_elastica.index.website.user');
     	
     	/** var Elastica_ResultSet */
-    	$resultSet = $userType->search('inicio');
+    	$resultSet = $userType->search('home');
     	die(var_dump($resultSet));
     	
         return $this->render('RCElasticSearchPHPCRProviderBundle:Default:index.html.twig', array('name' => $name));

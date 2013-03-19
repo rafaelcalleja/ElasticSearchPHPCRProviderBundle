@@ -4,11 +4,13 @@ namespace RC\ElasticSearchPHPCRProviderBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Config\FileLocator;
 use InvalidArgumentException;
 use Symfony\Component\Yaml\Parser;
@@ -19,7 +21,7 @@ use FOQ\ElasticaBundle\DependencyInjection\FOQElasticaExtension ;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class RCElasticSearchPHPCRProviderExtension extends FOQElasticaExtension 
+class RCElasticSearchPHPCRProviderExtension extends FOQElasticaExtension implements PrependExtensionInterface
 {
 	//protected $loadedDrivers = array(); 
 	
@@ -32,6 +34,41 @@ class RCElasticSearchPHPCRProviderExtension extends FOQElasticaExtension
 		$loader->load($driver.'.xml');
 		$this->loadedDrivers[] = $driver;
 	}
+	
+	public function prepend(ContainerBuilder $container)
+	{
+		$foq_extension = $container->getExtension('foq_elastica');
+		$configs = $container->getExtensionConfig($foq_extension->getAlias());
+		//$configs[0]["indexes"]["website"]["types"]["user"]["persistence"]["driver"] = 'phpcr';
+		
+		//die(var_dump($foq_extension->setAlias()));	
+		//$container->loadFromExtension('foq_elastica', $configs[0]);
+		//$own = $container->getExtensionConfig($this->getAlias());
+		
+ 		$container->prependExtensionConfig('rc_elastic_search_phpcr_provider', $configs[0]);
+		//die(var_dump($container->getAliases(), $foq_extension->getAlias(), $foq_extension->getNamespace()));
+		// ...
+	}
+	
+	protected function array_merge_recursive_distinct ( array &$array1, array &$array2 )
+	{
+		$merged = $array1;
+	
+		foreach ( $array2 as $key => &$value )
+		{
+			if ( is_array ( $value ) && isset ( $merged [$key] ) && is_array ( $merged [$key] ) )
+			{
+				$merged [$key] = $this->array_merge_recursive_distinct ( $merged [$key], $value );
+			}
+			else
+			{
+				$merged [$key] = $value;
+			}
+		}
+	
+		return $merged;
+	}
+	
     /**
      * {@inheritDoc}
      */
@@ -40,11 +77,22 @@ class RCElasticSearchPHPCRProviderExtension extends FOQElasticaExtension
        
       
 
-		$yaml = new Parser();
+// 		$yaml = new Parser();
 		
-		$value = $yaml->parse(file_get_contents($container->getParameter('kernel.root_dir').'/config/elasticasearch.yml'));
-		$value["foq_elastica"]["indexes"]["website"]["types"]["user"]["persistence"]["driver"] = 'phpcr';
-		$configelastica = array_values($value);
+// 		$value = $yaml->parse(file_get_contents($container->getParameter('kernel.root_dir').'/config/elasticasearch.yml'));
+// 		$value["foq_elastica"]["indexes"]["website"]["types"]["user"]["persistence"]["driver"] = 'phpcr';
+// 		$value["foq_elastica"]["indexes"]["website"]["types"]["user"]["mappings"]["title"]["multilanguage"] = true;
+    	
+    	
+		//$configelastica = array_values($value);
+   // 	die(var_dump($configs));
+//    		$add = $configs[1] + $configs[0];
+   		
+    	//die(var_dump( $configs[0] ));
+   		$configelastica = array($this->array_merge_recursive_distinct( $configs[0], $configs[1] ));
+//    		die(var_dump(array_values($value), $configelastica));
+		//die(var_dump($configelastica));
+    	//$configelastica = $configs[0];
 		
 		
 		$configuration =  new Configuration($configelastica, $container);
@@ -59,6 +107,7 @@ class RCElasticSearchPHPCRProviderExtension extends FOQElasticaExtension
 		
 // 		$loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 // 		$loader->load('config.xml');
+		//$container->setAlias('foq_elastica', 'rc_elastic_search_phpcr_provider');
 		
 		if (empty($config['clients']) || empty($config['indexes'])) {
 			throw new InvalidArgumentException('You must define at least one client and one index');

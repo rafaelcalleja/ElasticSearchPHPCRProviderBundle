@@ -269,6 +269,9 @@ class Configuration
 
         return $node;
     }
+    
+    
+    
 
     /**
      * Returns the array node used for "mappings".
@@ -309,6 +312,8 @@ class Configuration
             ->scalarNode('term_vector')->end()
             ->scalarNode('null_value')->end()
             ->booleanNode('include_in_all')->defaultValue(true)->end()
+            ->booleanNode('multilanguage')->defaultValue(false)->end()
+            ->arrayNode('languages')->prototype('scalar')->end()->end()
             ->scalarNode('lat_lon')->end()
             ->scalarNode('index_name')->end()
             ->booleanNode('omit_norms')->end()
