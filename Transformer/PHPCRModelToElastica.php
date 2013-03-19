@@ -3,6 +3,7 @@ namespace RC\ElasticSearchPHPCRProviderBundle\Transformer;
 
 use FOQ\ElasticaBundle\Transformer\ModelToElasticaTransformerInterface;
 use Symfony\Component\Form\Util\PropertyPath;
+use RC\ElasticSearchPHPCRProviderBundle\Helper\NameHelper;
 
 class PHPCRModelToElastica implements ModelToElasticaTransformerInterface
 {
@@ -52,8 +53,9 @@ class PHPCRModelToElastica implements ModelToElasticaTransformerInterface
 	public function transform($object, array $fields)
 	{
 		$identifierProperty = new PropertyPath($this->options['identifier']);
-		$identifier         = $identifierProperty->getValue($object);
+		$identifier         = NameHelper::normalizeName($identifierProperty->getValue($object));
 		$document           = new \Elastica_Document($identifier);
+		
 		foreach ($fields as $key => $mapping) {
 			$property = new PropertyPath($key);
 			

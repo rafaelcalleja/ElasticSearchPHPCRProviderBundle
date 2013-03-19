@@ -7,44 +7,44 @@ use FOQ\ElasticaBundle\Doctrine\AbstractListener;
 
 class Listener extends AbstractListener
 {
-    public function postPersist(LifecycleEventArgs $eventArgs)
+	public function postPersist(LifecycleEventArgs $eventArgs)
     {
-        $entity = $eventArgs->getEntity();
+        $document = $eventArgs->getDocument();
 
-        if ($entity instanceof $this->objectClass && $this->isObjectIndexable($entity)) {
-            $this->objectPersister->insertOne($entity);
+        if ($document instanceof $this->objectClass && $this->isObjectIndexable($document)) {
+            $this->objectPersister->insertOne($document);
         }
     }
 
     public function postUpdate(LifecycleEventArgs $eventArgs)
     {
-        $entity = $eventArgs->getEntity();
+        $document = $eventArgs->getDocument();
 
-        if ($entity instanceof $this->objectClass) {
-            if ($this->isObjectIndexable($entity)) {
-                $this->objectPersister->replaceOne($entity);
+        if ($document instanceof $this->objectClass) {
+            if ($this->isObjectIndexable($document)) {
+                $this->objectPersister->replaceOne($document);
             } else {
-                $this->scheduleForRemoval($entity, $eventArgs->getEntityManager());
-                $this->removeIfScheduled($entity);
+                $this->scheduleForRemoval($document, $eventArgs->getDocumentManager());
+                $this->removeIfScheduled($document);
             }
         }
     }
 
     public function preRemove(LifecycleEventArgs $eventArgs)
     {
-        $entity = $eventArgs->getEntity();
+        $document = $eventArgs->getDocument();
 
-        if ($entity instanceof $this->objectClass) {
-            $this->scheduleForRemoval($entity, $eventArgs->getEntityManager());
+        if ($document instanceof $this->objectClass) {
+            $this->scheduleForRemoval($document, $eventArgs->getDocumentManager());
         }
     }
 
     public function postRemove(LifecycleEventArgs $eventArgs)
     {
-        $entity = $eventArgs->getEntity();
+        $document = $eventArgs->getDocument();
 
-        if ($entity instanceof $this->objectClass) {
-            $this->removeIfScheduled($entity);
+        if ($document instanceof $this->objectClass) {
+            $this->removeIfScheduled($document);
         }
     }
 }

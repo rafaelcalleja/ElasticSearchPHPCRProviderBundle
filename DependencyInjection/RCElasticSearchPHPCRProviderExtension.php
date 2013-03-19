@@ -185,6 +185,60 @@ class RCElasticSearchPHPCRProviderExtension extends FOQElasticaExtension impleme
     	return new Configuration($config);
     }
     
+    private function getDoctrineEvents(array $typeConfig)
+    {
+    	$events = array();
+    	$eventMapping = array(
+    			'insert' => array('postPersist'),
+    			'update' => array('postUpdate'),
+    			'delete' => array('postRemove', 'preRemove')
+    	);
+    
+    	foreach ($eventMapping as $event => $doctrineEvents) {
+    		if (isset($typeConfig['listener'][$event]) && $typeConfig['listener'][$event]) {
+    			$events = array_merge($events, $doctrineEvents);
+    		}
+    	}
+    
+    	return $events;
+    }
+
+    protected function loadTypeListener(array $typeConfig, ContainerBuilder $container, $objectPersisterId, $typeDef, $indexName, $typeName)
+    {
+    	
+    	if (isset($typeConfig['listener']['service'])) {
+    		return $typeConfig['listener']['service'];
+    	}
+    	$abstractListenerId = sprintf('foq_elastica.listener.prototype.%s', $typeConfig['driver']);
+    	$listenerId = sprintf('foq_elastica.listener.%s.%s', $indexName, $typeName);
+    	$listenerDef = new DefinitionDecorator($abstractListenerId);
+    	$listenerDef->replaceArgument(0, new Reference($objectPersisterId));
+    	$listenerDef->replaceArgument(1, $typeConfig['model']);
+    	$listenerDef->replaceArgument(3, $typeConfig['identifier']);
+    	$listenerDef->replaceArgument(2, $this->getDoctrineEvents($typeConfig));
+    	
+    	switch ($typeConfig['driver']) {
+    		case 'orm': $listenerDef->addTag('doctrine.event_subscriber'); break;
+    		case 'mongodb': $listenerDef->addTag('doctrine_mongodb.odm.event_subscriber'); break;
+    		case 'phpcr': $listenerDef->addTag('doctrine_phpcr.event_subscriber'); break;
+    	}
+    	if (isset($typeConfig['listener']['is_indexable_callback'])) {
+    		$callback = $typeConfig['listener']['is_indexable_callback'];
+    
+    		if (is_array($callback)) {
+    			list($class) = $callback + array(null);
+    			if (is_string($class) && !class_exists($class)) {
+    				$callback[0] = new Reference($class);
+    			}
+    		}
+    
+    		$listenerDef->addMethodCall('setIsIndexableCallback', array($callback));
+    	}
+    	$container->setDefinition($listenerId, $listenerDef);
+    
+    	return $listenerId;
+    }
+    
 //     protected function loadDriver(ContainerBuilder $container, $driver)
 //     {
 //     	if (in_array($driver, $this->loadedDrivers)) {
