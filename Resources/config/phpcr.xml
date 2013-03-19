@@ -9,9 +9,13 @@
         <parameter key="foq_elastica.listener.prototype.phpcr.class">RC\ElasticSearchPHPCRProviderBundle\Doctrine\PHPCR\Listener</parameter>
         <parameter key="foq_elastica.elastica_to_model_transformer.prototype.phpcr.class">RC\ElasticSearchPHPCRProviderBundle\Doctrine\PHPCR\ElasticaToModelTransformer</parameter>
         <parameter key="foq_elastica.manager.phpcr.class">RC\ElasticSearchPHPCRProviderBundle\Doctrine\PHPCR\RepositoryManager</parameter>
+        <parameter key="phpcr_elastica.transformer.modeltoelastica.class">RC\ElasticSearchPHPCRProviderBundle\Transformer\PHPCRModelToElastica</parameter>
     </parameters>
 
     <services>
+        <service id="phpcr_elastica.transformer.modeltoelastica" class="%phpcr_elastica.transformer.modeltoelastica.class%">
+	        <argument type="service" id="doctrine_phpcr.odm.document_manager" />
+	    </service>
        <service id="foq_elastica.provider.prototype.phpcr" class="%foq_elastica.provider.prototype.phpcr.class%" public="true" abstract="true">
             <argument /> <!-- object persister -->
             <argument /> <!-- model -->

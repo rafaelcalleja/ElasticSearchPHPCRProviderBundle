@@ -89,6 +89,8 @@ class RCElasticSearchPHPCRProviderExtension extends FOQElasticaExtension impleme
 //    		$add = $configs[1] + $configs[0];
    		
     	//die(var_dump( $configs[0] ));
+    	if(empty($configs[1]) || empty($configs[0])) return false;
+    	
    		$configelastica = array($this->array_merge_recursive_distinct( $configs[0], $configs[1] ));
 //    		die(var_dump(array_values($value), $configelastica));
 		//die(var_dump($configelastica));
