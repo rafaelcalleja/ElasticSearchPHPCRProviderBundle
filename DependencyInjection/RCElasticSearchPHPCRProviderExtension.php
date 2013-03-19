@@ -30,6 +30,7 @@ class RCElasticSearchPHPCRProviderExtension extends FOQElasticaExtension impleme
 		if (in_array($driver, $this->loadedDrivers)) {
 			return;
 		}
+		if($driver != 'phpcr') return; 
 		$loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 		$loader->load($driver.'.xml');
 		$this->loadedDrivers[] = $driver;

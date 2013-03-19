@@ -16,7 +16,7 @@ use FOQ\ElasticaBundle\DependencyInjection\Configuration as ElasticConfig;
  */
 class Configuration
 {
-    private $supportedDrivers = array('phpcr');
+    private $supportedDrivers = array('phpcr', 'orm', 'mongodb', 'propel');
 
     private $configArray = array();
 
